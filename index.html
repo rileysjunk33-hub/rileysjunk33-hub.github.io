@@ -3,157 +3,275 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exchangeland | No KYC Crypto</title>
+    <title>Exchangeland | Anonymous Solana Exchange</title>
+    
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Orbitron:wght@500;900&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --neon-cyan: #00f2ff;
-            --glass: rgba(255, 255, 255, 0.05);
+            --neon-green: #00ff88;
+            --glass: rgba(255, 255, 255, 0.03);
             --border: rgba(255, 255, 255, 0.1);
         }
 
         body {
             margin: 0;
             padding: 0;
-            background: radial-gradient(circle at top right, #1a1a2e, #0a0a0a);
+            background: radial-gradient(circle at top right, #1a1a2e, #050505);
             color: white;
             font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* Nav Bar */
+        /* Navigation */
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 50px;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
+            padding: 15px 40px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--border);
+            z-index: 1000;
         }
 
         .logo {
             font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 900;
             color: var(--neon-cyan);
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
         }
 
-        /* Hero Section */
-        .hero {
-            height: 80vh;
+        .wallet-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        #balance-container {
+            display: none; /* Hidden until wallet connects */
+            font-family: 'Orbitron', sans-serif;
+            background: rgba(0, 255, 136, 0.1);
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            font-size: 0.85rem;
+        }
+
+        .connect-btn {
+            background: transparent;
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 10px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .connect-btn:hover {
+            background: var(--neon-cyan);
+            color: black;
+            box-shadow: 0 0 20px var(--neon-cyan);
+        }
+
+        /* Main Hero */
+        .main-container {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            padding: 80px 20px;
             text-align: center;
         }
 
         h1 {
             font-family: 'Orbitron', sans-serif;
-            font-size: 4rem;
-            margin-bottom: 10px;
-            background: linear-gradient(to right, #fff, var(--neon-cyan));
+            font-size: 3.5rem;
+            margin: 0;
+            background: linear-gradient(to bottom, #fff, #666);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
         }
 
-        .tagline {
-            font-size: 1.2rem;
-            color: #aaa;
-            margin-bottom: 30px;
+        .sub-text {
+            color: #888;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
         }
 
-        /* The Buy Card (Glassmorphism) */
-        .exchange-card {
+        /* Exchange Interface */
+        .exchange-box {
             background: var(--glass);
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 40px;
-            width: 400px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border-radius: 24px;
+            padding: 35px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
         }
 
-        .input-group {
+        .input-wrapper {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
             text-align: left;
-            margin-bottom: 20px;
         }
 
-        input {
+        .input-wrapper label {
+            display: block;
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .input-wrapper input {
             width: 100%;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid var(--border);
-            padding: 12px;
+            background: transparent;
+            border: none;
             color: white;
-            border-radius: 8px;
-            margin-top: 5px;
-            box-sizing: border-box;
+            font-size: 1.5rem;
+            outline: none;
+            font-family: 'Inter', sans-serif;
         }
 
-        .buy-btn {
+        .swap-btn {
             width: 100%;
-            background: var(--neon-cyan);
+            background: white;
             color: black;
             border: none;
-            padding: 15px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
+            padding: 18px;
+            border-radius: 12px;
             font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1rem;
+            cursor: pointer;
             transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .swap-btn:hover {
+            transform: scale(1.02);
+            background: var(--neon-cyan);
+        }
+
+        .status-badge {
+            margin-top: 20px;
+            font-size: 0.7rem;
+            color: var(--neon-green);
             text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
         }
 
-        .buy-btn:hover {
-            box-shadow: 0 0 20px var(--neon-cyan);
-            transform: translateY(-2px);
-        }
-
-        .no-kyc-badge {
-            margin-top: 15px;
-            display: inline-block;
-            font-size: 0.8rem;
-            color: #00ff88;
-            border: 1px solid #00ff88;
-            padding: 4px 10px;
-            border-radius: 50px;
-        }
+        .dot { height: 6px; width: 6px; background: var(--neon-green); border-radius: 50%; box-shadow: 0 0 5px var(--neon-green); }
     </style>
 </head>
 <body>
 
     <nav>
         <div class="logo">ExchangeLand</div>
-        <div>
-            <span style="margin-right: 20px; cursor: pointer;">Markets</span>
-            <button style="background: transparent; border: 1px solid white; color: white; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Connect Wallet</button>
+        <div class="wallet-section">
+            <div id="balance-container">
+                <span id="sol-balance">0.00</span> SOL
+            </div>
+            <button class="connect-btn" id="wallet-btn">Connect Wallet</button>
         </div>
     </nav>
 
-    <div class="hero">
-        <h1>Trade Beyond Limits</h1>
-        <p class="tagline">The future of exchange. No KYC. No tracking. Just Crypto.</p>
+    <div class="main-container">
+        <h1>EXCHANGELAND</h1>
+        <p class="sub-text">No KYC. No limits. Direct Solana liquidity.</p>
 
-        <div class="exchange-card">
-            <div class="input-group">
+        <div class="exchange-box">
+            <div class="input-wrapper">
                 <label>You Send</label>
-                <input type="text" placeholder="0.00 BTC">
+                <input type="number" placeholder="0.00" id="send-amount">
             </div>
-            <div class="input-group">
-                <label>You Get</label>
-                <input type="text" placeholder="0.00 ETH">
+            
+            <div style="margin: -10px 0 5px; color: var(--neon-cyan); font-size: 1.2rem;">↓</div>
+
+            <div class="input-wrapper">
+                <label>You Receive</label>
+                <input type="number" placeholder="0.00" id="receive-amount" readonly>
             </div>
-            <button class="buy-btn">Swap Now</button>
-            <div class="no-kyc-badge">● Anonymous Core Enabled</div>
+
+            <button class="swap-btn">Swap Assets</button>
+            
+            <div class="status-badge">
+                <div class="dot"></div> Secure Peer-to-Peer Protocol
+            </div>
         </div>
     </div>
 
+    <script>
+        const walletBtn = document.getElementById('wallet-btn');
+        const balanceContainer = document.getElementById('balance-container');
+        const solBalanceText = document.getElementById('sol-balance');
+
+        // Connect to Solana Mainnet RPC
+        const solanaConn = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
+
+        async function fetchWalletData(pubKey) {
+            try {
+                const balance = await solanaConn.getBalance(pubKey);
+                const solValue = balance / solanaWeb3.LAMPORTS_PER_SOL;
+                
+                // Show balance in top right
+                solBalanceText.innerText = solValue.toFixed(3);
+                balanceContainer.style.display = 'block';
+            } catch (e) {
+                console.error("Balance fetch failed", e);
+            }
+        }
+
+        walletBtn.addEventListener('click', async () => {
+            // Check for Phantom or similar
+            if (window.solana && window.solana.isPhantom) {
+                try {
+                    const response = await window.solana.connect();
+                    const walletKey = response.publicKey.toString();
+
+                    // Update Button text to show clipped address
+                    walletBtn.innerText = walletKey.slice(0, 4) + "..." + walletKey.slice(-4);
+                    
+                    // Get the real Solana balance
+                    await fetchWalletData(response.publicKey);
+
+                } catch (err) {
+                    console.log("Connection canceled");
+                }
+            } else {
+                alert("Solana wallet not found! Please install Phantom.");
+                window.open("https://phantom.app/", "_blank");
+            }
+        });
+
+        // Simple placeholder math for the swap inputs
+        document.getElementById('send-amount').addEventListener('input', (e) => {
+            const val = e.target.value;
+            document.getElementById('receive-amount').value = (val * 145.22).toFixed(2); // Random fake rate
+        });
+    </script>
 </body>
 </html>
