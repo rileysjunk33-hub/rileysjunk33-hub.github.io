@@ -3,140 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reston Eco-Delivery | Dispatch</title>
+    <title>Reston Eco-Delivery | Board</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0b0f1a;
-            --card-bg: #161b2c;
+            --bg-light: #f3f4f6;
+            --card-white: #ffffff;
             --primary: #10b981;
-            --accent: #38bdf8;
-            --warning: #fbbf24;
-            --danger: #f43f5e;
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
+            --accent: #3b82f6;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --danger: #ef4444;
         }
 
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--bg-dark); 
+            background-color: var(--bg-light); 
             margin: 0; padding: 20px; 
-            color: var(--text-main);
-            background-image: radial-gradient(circle at top right, #1e293b, #0b0f1a);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
             min-height: 100vh;
         }
 
-        .container { max-width: 550px; margin: auto; }
+        .container { width: 100%; max-width: 500px; }
 
-        .hero { 
-            padding: 30px 20px; text-align: center; margin-bottom: 25px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(12px);
+        /* Header Style */
+        .header-box {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+            position: relative;
         }
 
-        .hero h1 { margin: 0; font-size: 2em; font-weight: 800; letter-spacing: -1px; }
-        .hero p { color: var(--primary); font-weight: 800; font-size: 0.75em; letter-spacing: 2px; margin-top: 5px; }
+        .header-box h1 { margin: 0; font-size: 1.5em; font-weight: 800; }
 
-        .mission {
-            font-size: 0.8em; color: var(--text-dim); line-height: 1.5;
-            padding: 18px; margin-bottom: 25px; border-radius: 20px;
-            background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.1);
-        }
-
-        .card { 
-            background: var(--card-bg); padding: 25px; border-radius: 30px; 
-            margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.05);
-            position: relative; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .status-pill {
-            position: absolute; top: 20px; right: 20px;
-            padding: 5px 14px; border-radius: 99px; font-size: 0.65em; font-weight: 800;
-            text-transform: uppercase; letter-spacing: 1px;
-        }
-        .status-open { background: rgba(16, 185, 129, 0.2); color: var(--primary); }
-        .status-ontheway { background: rgba(56, 189, 248, 0.2); color: var(--accent); animation: pulse 2s infinite; }
-        .status-delivered { background: rgba(248, 250, 252, 0.1); color: #fff; }
-
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
-
-        .btn { 
-            padding: 16px; border: none; border-radius: 18px; 
-            cursor: pointer; font-weight: 800; width: 100%; 
-            font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
-            transition: 0.2s;
-        }
-        .btn-post { background: var(--primary); color: white; margin-top: 15px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2); }
-        .btn-accept { background: var(--accent); color: #0b0f1a; }
-        .btn-complete { background: var(--warning); color: #0b0f1a; }
-        
-        .btn-admin-delete { 
-            background: rgba(244, 63, 94, 0.1); color: var(--danger); 
-            border: 1px solid rgba(244, 63, 94, 0.3); font-size: 10px; 
-            padding: 8px; width: 100%; margin-top: 15px; cursor: pointer; 
-            border-radius: 12px; display: none; font-weight: 800;
+        /* Founder Mission */
+        .mission-box {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            font-size: 0.85em;
+            color: var(--text-muted);
+            border: 1px solid rgba(0,0,0,0.05);
+            line-height: 1.5;
         }
 
-        .admin-panel { 
-            background: #161b2c; padding: 30px; border-radius: 30px; 
-            margin-bottom: 35px; display: none; border: 2px solid var(--primary);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        /* Forms & Cards */
+        .panel { 
+            background: var(--card-white); 
+            padding: 30px; 
+            border-radius: 20px; 
+            margin-bottom: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.03);
         }
+
+        h2 { margin-top: 0; font-size: 1.2em; font-weight: 800; color: var(--text-dark); }
 
         input { 
-            width: 100%; padding: 15px; margin: 8px 0; 
-            background: #0b0f1a; border: 1px solid #2d3748; 
-            border-radius: 15px; color: white; font-family: inherit;
+            width: 100%; padding: 14px; margin: 8px 0; 
+            background: #f9fafb; border: 1px solid #e5e7eb; 
+            border-radius: 12px; font-family: inherit; box-sizing: border-box;
+            transition: border-color 0.2s;
         }
         input:focus { outline: none; border-color: var(--primary); }
 
-        .addr-chip {
-            background: rgba(11, 15, 26, 0.5); padding: 15px; 
-            border-radius: 18px; margin: 12px 0; border: 1px solid #2d3748;
+        .btn { 
+            padding: 16px; border: none; border-radius: 14px; 
+            cursor: pointer; font-weight: 800; width: 100%; 
+            font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;
+            transition: transform 0.1s, opacity 0.2s;
         }
-        .label { font-size: 9px; color: var(--text-dim); font-weight: 800; text-transform: uppercase; margin-bottom: 4px; }
-        .val { font-size: 14px; font-weight: 600; }
+        .btn:active { transform: scale(0.98); }
+        
+        .btn-post { background: var(--primary); color: white; margin-top: 10px; }
+        .btn-accept { background: var(--accent); color: white; }
+        .btn-complete { background: #fbbf24; color: #000; }
+        .btn-remove { 
+            background: none; border: 1px solid var(--danger); 
+            color: var(--danger); padding: 8px; margin-top: 15px; 
+            font-size: 10px; display: none; 
+        }
 
-        .data-row { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .total-badge { font-size: 0.7em; color: var(--text-dim); font-weight: 700; }
-        .pay-amount { font-size: 1.4em; font-weight: 800; color: var(--primary); }
+        /* Order Styling */
+        .order-card { position: relative; }
+        .status {
+            position: absolute; top: 25px; right: 25px;
+            font-size: 0.65em; font-weight: 800; text-transform: uppercase;
+            padding: 4px 10px; border-radius: 6px;
+        }
+        .status-open { background: #d1fae5; color: #065f46; }
+        .status-busy { background: #dbeafe; color: #1e40af; animation: pulse 2s infinite; }
+        .status-done { background: #f3f4f6; color: #374151; }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        .chip {
+            background: #f9fafb; padding: 12px; border-radius: 12px;
+            margin: 10px 0; border: 1px solid #f3f4f6;
+        }
+        .chip-label { font-size: 9px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; }
+        .chip-val { font-size: 13px; font-weight: 600; color: var(--text-dark); }
+
+        .price-grid { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+        .earnings { font-size: 1.4em; font-weight: 800; color: var(--primary); }
+        .total-ref { font-size: 10px; color: var(--text-muted); font-weight: 600; }
+
+        #admin-panel { display: none; border-top: 4px solid var(--primary); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="hero">
-        <button onclick="checkAdmin()" id="lock" style="float:right; background:none; border:none; color:var(--text-dim); cursor:pointer; font-size: 1.2em;">⚙️</button>
-        <p>RESTON ECOSYSTEM // 20194</p>
-        <h1>Eco-Delivery</h1>
+    <div class="header-box">
+        <button onclick="checkAdmin()" id="lock" style="position:absolute; right:15px; top:20px; background:none; border:none; color:rgba(255,255,255,0.6); cursor:pointer;">⚙️</button>
+        <h1>Reston Biker Board</h1>
     </div>
 
-    <div class="mission">
-        <strong>Mission:</strong> Riley (14) built this to save Reston restaurants from corporate fees. E-bike powered, zero emissions, and local-first.
+    <div class="mission-box">
+        <strong>Riley (Founder):</strong> I built this to help Reston restaurants avoid massive delivery fees. E-bike powered and local-first.
     </div>
 
-    <div id="admin-panel" class="admin-panel">
-        <h2 style="margin:0 0 20px 0; font-size: 1.4em;">Dispatch Center</h2>
-        <input type="text" id="r-name" placeholder="Restaurant Name (e.g. Glory Days)">
+    <div id="admin-panel" class="panel">
+        <h2>Post New Order</h2>
+        <input type="text" id="r-name" placeholder="Restaurant (e.g. Glory Days)">
+        <input type="text" id="items" placeholder="Items (e.g. 1 Burger, 1 Mac)">
         <input type="text" id="r-addr" placeholder="Pickup Address">
-        <input type="text" id="items" placeholder="Order Details (Items)">
         <input type="text" id="d-addr" placeholder="Delivery Address">
-        <div style="display: flex; gap: 10px;">
-            <input type="number" id="total" placeholder="Customer Total $">
-            <input type="number" id="pay" placeholder="Biker Pay $">
+        <div style="display:flex; gap:10px;">
+            <input type="number" id="cust-total" placeholder="Customer Total $">
+            <input type="number" id="biker-pay" placeholder="Biker Earnings $">
         </div>
-        <button onclick="postOrder()" class="btn btn-post">Release to Network</button>
+        <button onclick="postOrder()" class="btn btn-post">Post to Board</button>
     </div>
 
-    <div id="order-list"></div>
+    <div id="order-list">
+        <p style="text-align:center; color:var(--text-muted); margin-top:40px;">Connecting to Reston network...</p>
+    </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, push, onValue, update, remove, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAPdW-0WhvsGk4Lbgjrp08QBnR0QBOJ44k",
@@ -155,91 +171,76 @@
     let isAdmin = false;
 
     window.checkAdmin = () => {
-        if (prompt("Access Key:") === "reston_go") {
+        if (prompt("Passkey:") === "reston_go") {
             isAdmin = true;
             document.getElementById('admin-panel').style.display = 'block';
-            document.getElementById('lock').innerHTML = "⚡ ADMIN ACTIVE";
-            document.getElementById('lock').style.color = "var(--primary)";
-            refreshBoard();
+            document.getElementById('lock').style.display = 'none';
+            renderOrders();
         }
     };
 
     window.postOrder = () => {
         push(ordersRef, {
             res: document.getElementById('r-name').value,
-            res_a: document.getElementById('r-addr').value,
-            it: document.getElementById('items').value,
-            del_a: document.getElementById('d-addr').value,
-            total: document.getElementById('total').value,
-            pay: document.getElementById('pay').value,
-            status: "open",
-            created: serverTimestamp()
+            items: document.getElementById('items').value,
+            p_addr: document.getElementById('r-addr').value,
+            d_addr: document.getElementById('d-addr').value,
+            total: document.getElementById('cust-total').value,
+            pay: document.getElementById('biker-pay').value,
+            status: "open"
         });
         document.querySelectorAll('input').forEach(i => i.value = '');
     };
 
-    function refreshBoard() {
+    function renderOrders() {
         onValue(ordersRef, (snap) => {
-            const list = document.getElementById('order-list');
-            list.innerHTML = '';
+            const container = document.getElementById('order-list');
+            container.innerHTML = '';
             const data = snap.val();
-            if(!data) {
-                list.innerHTML = '<p style="text-align:center; color:var(--text-dim); margin-top:40px;">Network Quiet. No Active Dispatches.</p>';
-                return;
-            }
-
-            const now = Date.now();
+            if(!data) return container.innerHTML = '<p style="text-align:center; color:var(--text-muted); margin-top:40px;">No active orders.</p>';
 
             Object.entries(data).reverse().forEach(([id, o]) => {
-                // Hide delivered orders after 5 minutes
-                if (o.status === "delivered" && o.deliveredAt && (now - o.deliveredAt > 300000)) {
-                    remove(ref(db, `orders/${id}`));
-                    return;
-                }
-
                 const card = document.createElement('div');
-                card.className = `card`;
+                card.className = "panel order-card";
                 
-                let statusMarkup = `<span class="status-pill status-open">Available</span>`;
-                let buttonMarkup = `<button onclick="updateStatus('${id}', 'ontheway')" class="btn btn-accept">Accept Job</button>`;
+                let btnHtml = `<button onclick="act('${id}', 'busy')" class="btn btn-accept">Accept Order</button>`;
+                let statusHtml = `<span class="status status-open">Available</span>`;
 
-                if (o.status === "ontheway") {
-                    statusMarkup = `<span class="status-pill status-ontheway">In Progress</span>`;
-                    buttonMarkup = `<button onclick="completeOrder('${id}')" class="btn btn-complete">Mark Delivered</button>`;
-                } else if (o.status === "delivered") {
-                    statusMarkup = `<span class="status-pill status-delivered">✅ Completed</span>`;
-                    buttonMarkup = `<p style="text-align:center; color:var(--primary); font-size:0.8em; font-weight:800; margin:10px 0;">DELIVERY FINALIZED</p>`;
+                if(o.status === 'busy') {
+                    btnHtml = `<button onclick="act('${id}', 'done')" class="btn btn-complete">Mark Delivered</button>`;
+                    statusHtml = `<span class="status status-busy">On The Way</span>`;
+                } else if (o.status === 'done') {
+                    btnHtml = `<p style="text-align:center; color:var(--primary); font-weight:800; font-size:0.8em;">SUCCESSFULLY DELIVERED</p>`;
+                    statusHtml = `<span class="status status-done">Delivered</span>`;
                     card.style.opacity = "0.6";
                 }
 
                 card.innerHTML = `
-                    ${statusMarkup}
-                    <h2 style="margin:0; font-size:1.6em;">${o.res}</h2>
-                    <p style="color:var(--text-dim); margin:6px 0 18px 0; font-weight:600;">${o.it}</p>
+                    ${statusHtml}
+                    <h2 style="margin-bottom:5px;">${o.res}</h2>
+                    <p style="color:var(--text-muted); font-size:0.9em; margin-bottom:15px;">${o.items}</p>
                     
-                    <div class="addr-chip"><div class="label">Pickup</div><div class="val">📍 ${o.res_a}</div></div>
-                    <div class="addr-chip"><div class="label">Destination</div><div class="val">🏠 ${o.del_a}</div></div>
+                    <div class="chip"><div class="chip-label">Pickup</div><div class="chip-val">📍 ${o.p_addr}</div></div>
+                    <div class="chip"><div class="chip-label">Drop-off</div><div class="chip-val">🏠 ${o.d_addr}</div></div>
 
-                    <div class="data-row">
+                    <div class="price-grid">
                         <div>
-                            <div class="total-badge">CUSTOMER TOTAL: $${o.total}</div>
-                            <div class="pay-amount">$${o.pay}</div>
+                            <div class="total-ref">Order Total: $${o.total}</div>
+                            <div class="earnings">$${o.pay}</div>
                         </div>
-                        <div style="width:170px;">${buttonMarkup}</div>
+                        <div style="width:160px;">${btnHtml}</div>
                     </div>
-
-                    <button class="btn-admin-delete" style="display: ${isAdmin ? 'block' : 'none'}" onclick="forceDelete('${id}')">FORCE TERMINATE DISPATCH</button>
+                    <button class="btn btn-remove" style="display:${isAdmin?'block':'none'}" onclick="del('${id}')">Remove Order</button>
                 `;
-                list.appendChild(card);
+                container.appendChild(card);
             });
         });
     }
 
-    window.updateStatus = (id, newStatus) => update(ref(db, `orders/${id}`), { status: newStatus });
-    window.completeOrder = (id) => update(ref(db, `orders/${id}`), { status: "delivered", deliveredAt: Date.now() });
-    window.forceDelete = (id) => { if(confirm("Admin: Delete this order?")) remove(ref(db, `orders/${id}`)); };
+    window.act = (id, s) => update(ref(db, `orders/${id}`), { status: s });
+    window.del = (id) => { if(confirm("Remove this order?")) remove(ref(db, `orders/${id}`)); };
 
-    refreshBoard();
+    renderOrders();
 </script>
 </body>
 </html>
