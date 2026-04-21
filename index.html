@@ -3,100 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reston Eco-Delivery | Secure Board</title>
+    <title>Reston Biker Board</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-light: #f3f4f6;
-            --card-white: #ffffff;
-            --primary: #10b981;
-            --accent: #3b82f6;
-            --text-dark: #1f2937;
-            --text-muted: #6b7280;
-            --danger: #ef4444;
-        }
-
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--bg-light); 
-            margin: 0; padding: 20px; 
-            color: var(--text-dark);
-            display: flex; justify-content: center; min-height: 100vh;
-        }
-
+        :root { --bg-light: #f3f4f6; --card-white: #ffffff; --primary: #10b981; --accent: #3b82f6; --text-dark: #1f2937; --text-muted: #6b7280; --danger: #ef4444; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-light); margin: 0; padding: 20px; color: var(--text-dark); display: flex; justify-content: center; min-height: 100vh; }
         .container { width: 100%; max-width: 500px; }
-
-        .header-box {
-            background: var(--primary); color: white; padding: 20px;
-            border-radius: 16px; text-align: center; margin-bottom: 25px;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2); position: relative;
-        }
-
+        .header-box { background: var(--primary); color: white; padding: 20px; border-radius: 16px; text-align: center; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2); }
         .header-box h1 { margin: 0; font-size: 1.5em; font-weight: 800; }
-
-        .panel { 
-            background: var(--card-white); padding: 30px; border-radius: 20px; 
-            margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            border: 1px solid rgba(0,0,0,0.03);
-        }
-
-        .user-bar {
-            display: flex; justify-content: space-between; align-items: center;
-            background: #fff; padding: 10px 20px; border-radius: 12px;
-            margin-bottom: 20px; font-size: 0.8em; font-weight: 700;
-        }
-
-        input { 
-            width: 100%; padding: 14px; margin: 8px 0; 
-            background: #f9fafb; border: 1px solid #e5e7eb; 
-            border-radius: 12px; font-family: inherit; box-sizing: border-box;
-        }
-
-        .btn { 
-            padding: 16px; border: none; border-radius: 14px; 
-            cursor: pointer; font-weight: 800; width: 100%; 
-            font-size: 14px; text-transform: uppercase; transition: 0.2s;
-        }
-        
+        .panel { background: var(--card-white); padding: 30px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.03); }
+        .user-bar { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 10px 20px; border-radius: 12px; margin-bottom: 20px; font-size: 0.8em; font-weight: 700; }
+        input { width: 100%; padding: 14px; margin: 8px 0; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; font-family: inherit; box-sizing: border-box; }
+        .btn { padding: 16px; border: none; border-radius: 14px; cursor: pointer; font-weight: 800; width: 100%; font-size: 14px; text-transform: uppercase; transition: 0.2s; }
         .btn-post { background: var(--primary); color: white; margin-top: 10px; }
         .btn-staff { background: #6366f1; color: white; margin-top: 10px; }
-        .btn-report { background: #1f2937; color: white; margin-bottom: 20px; }
+        .btn-track { background: var(--accent); color: white; margin-top: 10px; }
         .btn-accept { background: var(--accent); color: white; }
         .btn-complete { background: #fbbf24; color: #000; }
         .btn-remove { background: none; border: 1px solid var(--danger); color: var(--danger); font-size: 10px; margin-top: 15px; }
-
-        .status {
-            position: absolute; top: 25px; right: 25px;
-            font-size: 0.65em; font-weight: 800; padding: 4px 10px; border-radius: 6px;
-        }
+        .status { position: absolute; top: 25px; right: 25px; font-size: 0.65em; font-weight: 800; padding: 4px 10px; border-radius: 6px; }
         .status-open { background: #d1fae5; color: #065f46; }
         .status-busy { background: #dbeafe; color: #1e40af; }
-
         .biker-tag { font-size: 11px; color: var(--accent); font-weight: 800; margin-top: 5px; display: block; }
-        .chip { background: #f9fafb; padding: 12px; border-radius: 12px; margin: 10px 0; border: 1px solid #f3f4f6; }
+        .chip { background: #f9fafb; padding: 12px; border-radius: 12px; margin: 10px 0; border: 1px solid #f3f4f6; position: relative; }
         .chip-label { font-size: 9px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; }
         .chip-val { font-size: 13px; font-weight: 600; }
-
         .price-grid { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
         .earnings { font-size: 1.4em; font-weight: 800; color: var(--primary); }
-
-        #admin-panel { display: none; }
+        .order-id-badge { background: #1f2937; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header-box">
-        <h1>Reston Eco-Delivery Staff Hub</h1>
+        <h1>Reston Biker Board</h1>
     </div>
 
     <div id="login-overlay" class="panel">
         <h2 style="text-align:center">Staff Login</h2>
-        <p style="text-align:center; font-size: 0.8em; color: var(--text-muted);">Enter your 4-digit code to access the board.</p>
         <input type="password" id="login-code" maxlength="4" placeholder="••••" style="text-align:center; font-size: 2em; letter-spacing: 10px;">
         <button onclick="verifyLogin()" class="btn btn-post">Sign In</button>
+        <div style="margin: 20px 0; border-top: 1px solid #eee;"></div>
+        <button onclick="trackOrderPrompt()" class="btn btn-track">I want to check on my order</button>
     </div>
 
     <div id="main-board" style="display:none;">
@@ -105,11 +56,10 @@
             <button onclick="location.reload()" style="background:none; border:none; color:var(--danger); font-weight:800; cursor:pointer;">LOGOUT</button>
         </div>
 
-        <div id="admin-panel">
-            <button id="report-btn" onclick="genReport()" class="btn btn-report">Weekly Payout Report</button>
+        <div id="admin-panel" style="display:none;">
             <div class="panel">
-                <h2>Admin Controls</h2>
-                <button onclick="createEmployee()" class="btn btn-staff">Create Employee Code</button>
+                <h2>Dispatch Center</h2>
+                <button onclick="createEmployee()" class="btn btn-staff">Create Employee</button>
                 <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
                 <input type="text" id="r-name" placeholder="Restaurant Name">
                 <input type="text" id="items" placeholder="Order Details">
@@ -119,7 +69,7 @@
                     <input type="number" id="cust-total" placeholder="Customer Total $">
                     <input type="number" id="biker-pay" placeholder="Biker Earnings $">
                 </div>
-                <button onclick="postOrder()" class="btn btn-post">Post Order</button>
+                <button onclick="postOrder()" class="btn btn-post">Release Order</button>
             </div>
         </div>
 
@@ -148,14 +98,15 @@
 
     let isAdmin = false;
     let currentUser = "";
-    const ADMIN_PASS = "6793"; // Your specific admin code
+    let currentUserPhone = "";
+    const ADMIN_PASS = "6793"; // Your admin code
 
     window.verifyLogin = async () => {
         const code = document.getElementById('login-code').value;
-        
         if(code === ADMIN_PASS) {
             isAdmin = true;
             currentUser = "Riley";
+            currentUserPhone = "571 436 4912"; // Added Riley's phone
             document.getElementById('admin-panel').style.display = 'block';
             enterBoard();
             return;
@@ -164,39 +115,57 @@
         const snapshot = await get(staffRef);
         const staffData = snapshot.val();
         let found = false;
-        
         if(staffData) {
             Object.values(staffData).forEach(staff => {
                 if(staff.code === code) {
                     currentUser = staff.name;
+                    currentUserPhone = staff.phone; // Store staff phone
                     found = true;
                 }
             });
         }
-
-        if(found) {
-            enterBoard();
-        } else {
-            Swal.fire('Error', 'Invalid Code', 'error');
-        }
+        if(found) enterBoard(); else Swal.fire('Error', 'Invalid Code', 'error');
     };
 
     function enterBoard() {
-        document.getElementById('display-name').innerText = currentUser;
         document.getElementById('login-overlay').style.display = 'none';
         document.getElementById('main-board').style.display = 'block';
+        document.getElementById('display-name').innerText = currentUser;
         renderOrders();
     }
 
+    window.trackOrderPrompt = async () => {
+        const { value: orderID } = await Swal.fire({
+            title: 'Enter Order ID',
+            input: 'text',
+            inputLabel: 'The 6-digit number on your receipt',
+            showCancelButton: true
+        });
+        if (orderID) {
+            onValue(ordersRef, (snap) => {
+                const data = snap.val();
+                let foundOrder = null;
+                if(data) Object.values(data).forEach(o => { if(o.trackID === orderID) foundOrder = o; });
+                if(foundOrder) {
+                    const info = foundOrder.status === 'open' ? 'Waiting for Biker' : 
+                                 `Biker: ${foundOrder.biker}\nPhone: ${foundOrder.bikerPhone}`; // Show biker info to customer
+                    Swal.fire(`Order Found!`, `Status: ${foundOrder.status.toUpperCase()}\n\n${info}`, 'info');
+                } else { Swal.fire('Error', 'Order ID not found', 'error'); }
+            }, { onlyOnce: true });
+        }
+    };
+
     window.createEmployee = () => {
-        const name = prompt("Enter New Employee Name:");
-        if(!name) return;
+        const name = prompt("Employee Name:");
+        const phone = prompt("Employee Phone Number:"); // Added phone prompt
+        if(!name || !phone) return;
         const code = Math.floor(1000 + Math.random() * 9000).toString();
-        push(staffRef, { name: name, code: code });
-        Swal.fire('Employee Created', `Name: ${name}\nAccess Code: ${code}`, 'success');
+        push(staffRef, { name, phone, code });
+        Swal.fire('Staff Created', `Name: ${name}\nCode: ${code}`, 'success');
     };
 
     window.postOrder = () => {
+        const trackID = Math.floor(100000 + Math.random() * 900000).toString(); // Random 6-digit ID
         push(ordersRef, {
             res: document.getElementById('r-name').value,
             items: document.getElementById('items').value,
@@ -205,80 +174,46 @@
             total: document.getElementById('cust-total').value,
             pay: document.getElementById('biker-pay').value,
             status: "open",
-            biker: ""
+            biker: "",
+            bikerPhone: "",
+            trackID: trackID
         });
         document.querySelectorAll('input').forEach(i => i.value = '');
-    };
-
-    window.genReport = () => {
-        onValue(ordersRef, (snap) => {
-            const data = snap.val();
-            if(!data) return;
-            let report = "WEEKLY PAYOUT REPORT\n------------------\n";
-            let grandTotal = 0;
-            Object.values(data).forEach(o => {
-                if(o.status === 'done') {
-                    report += `${o.biker}: $${o.pay} (${o.res})\n`;
-                    grandTotal += Number(o.pay);
-                }
-            });
-            report += `------------------\nGRAND TOTAL: $${grandTotal}`;
-            Swal.fire('Report Generated', report, 'info');
-        }, { onlyOnce: true });
+        Swal.fire('Order Posted', `Customer Tracking ID: ${trackID}`, 'success');
     };
 
     function renderOrders() {
         onValue(ordersRef, (snap) => {
-            const container = document.getElementById('order-list');
-            container.innerHTML = '';
-            const data = snap.val();
-            if(!data) return;
-
+            const container = document.getElementById('order-list'); container.innerHTML = '';
+            const data = snap.val(); if(!data) return;
             Object.entries(data).reverse().forEach(([id, o]) => {
                 const card = document.createElement('div');
                 card.className = "panel order-card";
-                
-                let btnHtml = `<button onclick="acceptJob('${id}')" class="btn btn-accept">Accept Job</button>`;
-                let statusHtml = `<span class="status status-open">Available</span>`;
-                let bikerTag = "";
-
-                if(o.status === 'busy') {
-                    statusHtml = `<span class="status status-busy">In Progress</span>`;
-                    bikerTag = `<span class="biker-tag">TAKEN BY ${o.biker}</span>`;
-                    btnHtml = (o.biker === currentUser || isAdmin) ? 
-                        `<button onclick="updateStatus('${id}', 'done')" class="btn btn-complete">Mark Delivered</button>` : 
-                        `<button class="btn" style="background:#e5e7eb; color:#9ca3af; cursor:default;">Biker Busy</button>`;
-                } else if (o.status === 'done') {
-                    statusHtml = `<span class="status status-done">Delivered</span>`;
-                    bikerTag = `<span class="biker-tag" style="color:var(--primary)">COMPLETED BY ${o.biker}</span>`;
-                    btnHtml = `<p style="text-align:center; color:var(--primary); font-weight:800; font-size:0.8em;">SUCCESS</p>`;
-                    card.style.opacity = "0.6";
-                }
-
                 card.innerHTML = `
-                    ${statusHtml}
-                    <h2 style="margin:0;">${o.res}</h2>
-                    ${bikerTag}
-                    <p style="color:var(--text-muted); font-size:0.9em; margin:10px 0;">${o.items}</p>
-                    <div class="chip"><div class="chip-label">Pickup</div><div class="chip-val">📍 ${o.p_addr}</div></div>
-                    <div class="chip"><div class="chip-label">Drop-off</div><div class="chip-val">🏠 ${o.d_addr}</div></div>
+                    <span class="status status-${o.status}">${o.status.toUpperCase()}</span>
+                    <h2 style="margin:0;">${o.res} <span class="order-id-badge">ID: ${o.trackID}</span></h2>
+                    <p style="color:var(--text-muted); font-size:0.9em;">${o.items}</p>
+                    <div class="chip"><div class="chip-label">Address</div><div class="chip-val">${o.d_addr}</div></div>
                     <div class="price-grid">
                         <div>
-                            <div class="total-ref">Total: $${o.total}</div>
+                            <div class="chip-label">Order Total: $${o.total}</div>
                             <div class="earnings">$${o.pay}</div>
                         </div>
-                        <div style="width:160px;">${btnHtml}</div>
+                        <div style="width:160px;">
+                            ${o.status === 'open' ? `<button onclick="accept('${id}')" class="btn btn-accept">Accept</button>` : 
+                              (o.biker === currentUser || isAdmin) ? `<button onclick="done('${id}')" class="btn btn-complete">Delivered</button>` : 'Busy'}
+                        </div>
                     </div>
-                    <button class="btn btn-remove" style="display:${isAdmin?'block':'none'}" onclick="del('${id}')">Remove Order</button>
+                    <button class="btn btn-remove" style="display:${isAdmin?'block':'none'}" onclick="del('${id}')">Remove</button>
                 `;
                 container.appendChild(card);
             });
         });
     }
 
-    window.acceptJob = (id) => update(ref(db, `orders/${id}`), { status: 'busy', biker: currentUser });
-    window.updateStatus = (id, s) => update(ref(db, `orders/${id}`), { status: s });
-    window.del = (id) => { if(confirm("Permanently remove?")) remove(ref(db, `orders/${id}`)); };
+    window.accept = (id) => update(ref(db, `orders/${id}`), { status: 'busy', biker: currentUser, bikerPhone: currentUserPhone });
+    window.done = (id) => update(ref(db, `orders/${id}`), { status: 'done' });
+    window.del = (id) => { if(confirm("Delete?")) remove(ref(db, `orders/${id}`)); };
 </script>
 </body>
 </html>
