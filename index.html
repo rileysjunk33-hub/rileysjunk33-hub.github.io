@@ -18,21 +18,20 @@
         input { width: 100%; padding: 14px; margin: 8px 0; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; font-family: inherit; box-sizing: border-box; }
         .btn { padding: 16px; border: none; border-radius: 14px; cursor: pointer; font-weight: 800; width: 100%; font-size: 14px; text-transform: uppercase; transition: 0.2s; }
         .btn-post { background: var(--primary); color: white; margin-top: 10px; }
-        .btn-staff { background: #6366f1; color: white; margin-top: 10px; }
         .btn-track { background: var(--accent); color: white; margin-top: 10px; }
+        .btn-order { background: #1f2937; color: white; margin-top: 10px; }
         .btn-accept { background: var(--accent); color: white; }
         .btn-complete { background: #fbbf24; color: #000; }
         .btn-remove { background: none; border: 1px solid var(--danger); color: var(--danger); font-size: 10px; margin-top: 15px; }
         .status { position: absolute; top: 25px; right: 25px; font-size: 0.65em; font-weight: 800; padding: 4px 10px; border-radius: 6px; }
         .status-open { background: #d1fae5; color: #065f46; }
         .status-busy { background: #dbeafe; color: #1e40af; }
-        .biker-tag { font-size: 11px; color: var(--accent); font-weight: 800; margin-top: 5px; display: block; }
-        .chip { background: #f9fafb; padding: 12px; border-radius: 12px; margin: 10px 0; border: 1px solid #f3f4f6; position: relative; }
+        .status-done { background: #fee2e2; color: #991b1b; }
+        .chip { background: #f9fafb; padding: 12px; border-radius: 12px; margin: 10px 0; border: 1px solid #f3f4f6; }
         .chip-label { font-size: 9px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; }
         .chip-val { font-size: 13px; font-weight: 600; }
         .price-grid { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
         .earnings { font-size: 1.4em; font-weight: 800; color: var(--primary); }
-        .order-id-badge { background: #1f2937; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; }
     </style>
 </head>
 <body>
@@ -48,6 +47,7 @@
         <button onclick="verifyLogin()" class="btn btn-post">Sign In</button>
         <div style="margin: 20px 0; border-top: 1px solid #eee;"></div>
         <button onclick="trackOrderPrompt()" class="btn btn-track">I want to check on my order</button>
+        <button onclick="orderPrompt()" class="btn btn-order">Order Here</button>
     </div>
 
     <div id="main-board" style="display:none;">
@@ -55,15 +55,13 @@
             <span>Signed in as: <span id="display-name" style="color:var(--accent);">--</span></span>
             <button onclick="location.reload()" style="background:none; border:none; color:var(--danger); font-weight:800; cursor:pointer;">LOGOUT</button>
         </div>
-
         <div id="admin-panel" style="display:none;">
             <div class="panel">
                 <h2>Dispatch Center</h2>
-                <button onclick="createEmployee()" class="btn btn-staff">Create Employee</button>
+                <button onclick="createEmployee()" class="btn btn-track" style="background:#6366f1">Create Employee</button>
                 <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
                 <input type="text" id="r-name" placeholder="Restaurant Name">
                 <input type="text" id="items" placeholder="Order Details">
-                <input type="text" id="r-addr" placeholder="Pickup Address">
                 <input type="text" id="d-addr" placeholder="Delivery Address">
                 <div style="display:flex; gap:10px;">
                     <input type="number" id="cust-total" placeholder="Customer Total $">
@@ -72,7 +70,6 @@
                 <button onclick="postOrder()" class="btn btn-post">Release Order</button>
             </div>
         </div>
-
         <div id="order-list"></div>
     </div>
 </div>
@@ -99,32 +96,21 @@
     let isAdmin = false;
     let currentUser = "";
     let currentUserPhone = "";
-    const ADMIN_PASS = "6793"; // Your admin code
+    const ADMIN_PASS = "6793"; // Your master code
 
     window.verifyLogin = async () => {
         const code = document.getElementById('login-code').value;
         if(code === ADMIN_PASS) {
-            isAdmin = true;
-            currentUser = "Riley";
-            currentUserPhone = "571 436 4912"; // Added Riley's phone
+            isAdmin = true; currentUser = "Riley"; currentUserPhone = "571 436 4912";
             document.getElementById('admin-panel').style.display = 'block';
-            enterBoard();
-            return;
+            enterBoard(); return;
         }
-
-        const snapshot = await get(staffRef);
-        const staffData = snapshot.val();
-        let found = false;
-        if(staffData) {
-            Object.values(staffData).forEach(staff => {
-                if(staff.code === code) {
-                    currentUser = staff.name;
-                    currentUserPhone = staff.phone; // Store staff phone
-                    found = true;
-                }
-            });
+        const snap = await get(staffRef);
+        const data = snap.val();
+        if(data) {
+            Object.values(data).forEach(s => { if(s.code === code) { currentUser = s.name; currentUserPhone = s.phone; } });
         }
-        if(found) enterBoard(); else Swal.fire('Error', 'Invalid Code', 'error');
+        if(currentUser) enterBoard(); else Swal.fire('Error', 'Invalid Code', 'error');
     };
 
     function enterBoard() {
@@ -135,85 +121,79 @@
     }
 
     window.trackOrderPrompt = async () => {
-        const { value: orderID } = await Swal.fire({
-            title: 'Enter Order ID',
-            input: 'text',
-            inputLabel: 'The 6-digit number on your receipt',
-            showCancelButton: true
-        });
-        if (orderID) {
+        const { value: id } = await Swal.fire({ title: 'Order Tracking', input: 'text', inputLabel: 'Enter your 6-digit Order ID' });
+        if(id) {
             onValue(ordersRef, (snap) => {
-                const data = snap.val();
-                let foundOrder = null;
-                if(data) Object.values(data).forEach(o => { if(o.trackID === orderID) foundOrder = o; });
-                if(foundOrder) {
-                    const info = foundOrder.status === 'open' ? 'Waiting for Biker' : 
-                                 `Biker: ${foundOrder.biker}\nPhone: ${foundOrder.bikerPhone}`; // Show biker info to customer
-                    Swal.fire(`Order Found!`, `Status: ${foundOrder.status.toUpperCase()}\n\n${info}`, 'info');
-                } else { Swal.fire('Error', 'Order ID not found', 'error'); }
+                let o = null;
+                if(snap.val()) Object.values(snap.val()).forEach(item => { if(item.trackID === id) o = item; });
+                if(o) {
+                    let statusText = o.status === 'open' ? 'RECEIVED' : (o.status === 'busy' ? 'IN PROGRESS' : 'DELIVERED');
+                    let msg = `Status: ${statusText}`;
+                    if(o.status !== 'open') msg += `\nBiker: ${o.biker}\nPhone: ${o.bikerPhone}`;
+                    Swal.fire('Order Details', msg, 'info');
+                } else { Swal.fire('Error', 'Invalid ID', 'error'); }
             }, { onlyOnce: true });
         }
     };
 
+    window.orderPrompt = () => Swal.fire('Order Here', 'Please text (571)-436-4912 to place your order!', 'info');
+
     window.createEmployee = () => {
-        const name = prompt("Employee Name:");
-        const phone = prompt("Employee Phone Number:"); // Added phone prompt
-        if(!name || !phone) return;
-        const code = Math.floor(1000 + Math.random() * 9000).toString();
-        push(staffRef, { name, phone, code });
-        Swal.fire('Staff Created', `Name: ${name}\nCode: ${code}`, 'success');
+        const n = prompt("Name:"); const p = prompt("Phone:");
+        if(n && p) {
+            const c = Math.floor(1000 + Math.random() * 9000).toString();
+            push(staffRef, { name: n, phone: p, code: c });
+            Swal.fire('Staff Added', `Name: ${n}\nLogin Code: ${c}`, 'success');
+        }
     };
 
     window.postOrder = () => {
-        const trackID = Math.floor(100000 + Math.random() * 900000).toString(); // Random 6-digit ID
+        const tid = Math.floor(100000 + Math.random() * 900000).toString();
         push(ordersRef, {
             res: document.getElementById('r-name').value,
             items: document.getElementById('items').value,
-            p_addr: document.getElementById('r-addr').value,
             d_addr: document.getElementById('d-addr').value,
             total: document.getElementById('cust-total').value,
             pay: document.getElementById('biker-pay').value,
-            status: "open",
-            biker: "",
-            bikerPhone: "",
-            trackID: trackID
+            status: "open", biker: "", bikerPhone: "", trackID: tid
         });
         document.querySelectorAll('input').forEach(i => i.value = '');
-        Swal.fire('Order Posted', `Customer Tracking ID: ${trackID}`, 'success');
+        Swal.fire('Posted', `Customer Tracking ID: ${tid}`, 'success');
     };
 
     function renderOrders() {
         onValue(ordersRef, (snap) => {
             const container = document.getElementById('order-list'); container.innerHTML = '';
-            const data = snap.val(); if(!data) return;
-            Object.entries(data).reverse().forEach(([id, o]) => {
+            if(!snap.val()) return;
+            Object.entries(snap.val()).reverse().forEach(([key, o]) => {
                 const card = document.createElement('div');
-                card.className = "panel order-card";
+                card.className = "panel";
+                let statusLabel = o.status === 'open' ? 'AVAILABLE' : (o.status === 'busy' ? 'IN PROGRESS' : 'DELIVERED');
                 card.innerHTML = `
-                    <span class="status status-${o.status}">${o.status.toUpperCase()}</span>
-                    <h2 style="margin:0;">${o.res} <span class="order-id-badge">ID: ${o.trackID}</span></h2>
-                    <p style="color:var(--text-muted); font-size:0.9em;">${o.items}</p>
-                    <div class="chip"><div class="chip-label">Address</div><div class="chip-val">${o.d_addr}</div></div>
+                    <span class="status status-${o.status}">${statusLabel}</span>
+                    <h2 style="margin:0;">${o.res} <span style="font-size:0.5em; background:#eee; padding:2px 5px; border-radius:4px;">ID: ${o.trackID}</span></h2>
+                    <p style="color:var(--text-muted); font-size:0.8em;">${o.items}</p>
+                    <div class="chip"><div class="chip-label">Deliver To</div><div class="chip-val">${o.d_addr}</div></div>
                     <div class="price-grid">
-                        <div>
-                            <div class="chip-label">Order Total: $${o.total}</div>
-                            <div class="earnings">$${o.pay}</div>
-                        </div>
-                        <div style="width:160px;">
-                            ${o.status === 'open' ? `<button onclick="accept('${id}')" class="btn btn-accept">Accept</button>` : 
-                              (o.biker === currentUser || isAdmin) ? `<button onclick="done('${id}')" class="btn btn-complete">Delivered</button>` : 'Busy'}
+                        <div><div class="chip-label">Total: $${o.total}</div><div class="earnings">$${o.pay}</div></div>
+                        <div style="width:150px;">
+                            ${o.status === 'open' ? `<button onclick="act('${key}', 'busy')" class="btn btn-accept">Accept</button>` : 
+                              (o.status === 'busy' && (isAdmin || o.biker === currentUser)) ? `<button onclick="act('${key}', 'done')" class="btn btn-complete">Delivered</button>` : ''}
                         </div>
                     </div>
-                    <button class="btn btn-remove" style="display:${isAdmin?'block':'none'}" onclick="del('${id}')">Remove</button>
+                    <button class="btn btn-remove" style="display:${isAdmin?'block':'none'}" onclick="rem('${key}')">Remove</button>
                 `;
                 container.appendChild(card);
             });
         });
     }
 
-    window.accept = (id) => update(ref(db, `orders/${id}`), { status: 'busy', biker: currentUser, bikerPhone: currentUserPhone });
-    window.done = (id) => update(ref(db, `orders/${id}`), { status: 'done' });
-    window.del = (id) => { if(confirm("Delete?")) remove(ref(db, `orders/${id}`)); };
+    window.act = (k, s) => {
+        let upd = { status: s };
+        if(s === 'busy') { upd.biker = currentUser; upd.bikerPhone = currentUserPhone; }
+        update(ref(db, `orders/${k}`), upd);
+    };
+    window.rem = (k) => { if(confirm("Delete?")) remove(ref(db, `orders/${k}`)); };
 </script>
 </body>
 </html>
