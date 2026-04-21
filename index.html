@@ -95,7 +95,7 @@
     <div id="login-overlay" class="panel">
         <h2 style="text-align:center">Staff Login</h2>
         <p style="text-align:center; font-size: 0.8em; color: var(--text-muted);">Enter your 4-digit code to access the board.</p>
-        <input type="password" id="login-code" maxlength="4" placeholder="••••" style="text-align:center; font-size: 2em; letter-spacing: 10px;">
+        <input type="password" id="login-code" maxlength="8" placeholder="••••" style="text-align:center; font-size: 2em; letter-spacing: 10px;">
         <button onclick="verifyLogin()" class="btn btn-post">Sign In</button>
     </div>
 
@@ -106,9 +106,9 @@
         </div>
 
         <div id="admin-panel">
-            <button onclick="genReport()" class="btn btn-report">Generate Weekly Payouts</button>
+            <button onclick="genReport()" class="btn btn-report">Weekly Payout Report</button>
             <div class="panel">
-                <h2>Admin Management</h2>
+                <h2>Admin Controls</h2>
                 <button onclick="createEmployee()" class="btn btn-staff">Create Employee Code</button>
                 <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
                 <input type="text" id="r-name" placeholder="Restaurant Name">
@@ -119,7 +119,7 @@
                     <input type="number" id="cust-total" placeholder="Customer Total $">
                     <input type="number" id="biker-pay" placeholder="Biker Earnings $">
                 </div>
-                <button onclick="postOrder()" class="btn btn-post">Release Order to Board</button>
+                <button onclick="postOrder()" class="btn btn-post">Post Order</button>
             </div>
         </div>
 
@@ -149,21 +149,21 @@
 
     let isAdmin = false;
     let currentUser = "";
-    const ADMIN_PASS = "reston_go"; // Set your 4-digit admin code here
+    const ADMIN_PASS = "reston_go"; // Your specific admin code
 
     window.verifyLogin = async () => {
         const code = document.getElementById('login-code').value;
         
-        // Check for Admin code
+        // Direct Admin Entry
         if(code === ADMIN_PASS) {
             isAdmin = true;
-            currentUser = "Administrator";
+            currentUser = "Riley (Admin)";
             document.getElementById('admin-panel').style.display = 'block';
             enterBoard();
             return;
         }
 
-        // Check for Employee codes
+        // Employee Database Check
         const snapshot = await get(staffRef);
         const staffData = snapshot.val();
         let found = false;
@@ -196,7 +196,7 @@
         if(!name) return;
         const code = Math.floor(1000 + Math.random() * 9000).toString();
         push(staffRef, { name: name, code: code });
-        Swal.fire('Success', `Employee: ${name}\nAccess Code: ${code}`, 'success');
+        Swal.fire('Code Generated', `Give this to ${name}: ${code}`, 'success');
     };
 
     window.postOrder = () => {
@@ -225,8 +225,8 @@
                     grandTotal += Number(o.pay);
                 }
             });
-            report += `\nTOTAL DISBURSED: $${grandTotal}`;
-            Swal.fire('Payout Report', report, 'info');
+            report += `\nTOTAL: $${grandTotal}`;
+            Swal.fire('Payout Summary', report, 'info');
         }, { onlyOnce: true });
     };
 
@@ -246,15 +246,15 @@
                 let bikerTag = "";
 
                 if(o.status === 'busy') {
-                    statusHtml = `<span class="status status-busy">On The Way</span>`;
+                    statusHtml = `<span class="status status-busy">In Progress</span>`;
                     bikerTag = `<span class="biker-tag">TAKEN BY ${o.biker}</span>`;
                     btnHtml = (o.biker === currentUser || isAdmin) ? 
                         `<button onclick="updateStatus('${id}', 'done')" class="btn btn-complete">Mark Delivered</button>` : 
-                        `<button class="btn" style="background:#e5e7eb; color:#9ca3af; cursor:default;">Busy</button>`;
+                        `<button class="btn" style="background:#e5e7eb; color:#9ca3af; cursor:default;">Occupied</button>`;
                 } else if (o.status === 'done') {
                     statusHtml = `<span class="status status-done">Delivered</span>`;
                     bikerTag = `<span class="biker-tag" style="color:var(--primary)">SUCCESS: ${o.biker}</span>`;
-                    btnHtml = `<p style="text-align:center; color:var(--primary); font-weight:800; font-size:0.8em;">FINALIZED</p>`;
+                    btnHtml = `<p style="text-align:center; color:var(--primary); font-weight:800; font-size:0.8em;">ORDER REMOVED</p>`;
                     card.style.opacity = "0.6";
                 }
 
@@ -281,7 +281,7 @@
 
     window.acceptJob = (id) => update(ref(db, `orders/${id}`), { status: 'busy', biker: currentUser });
     window.updateStatus = (id, s) => update(ref(db, `orders/${id}`), { status: s });
-    window.del = (id) => { if(confirm("Permanently delete this order?")) remove(ref(db, `orders/${id}`)); };
+    window.del = (id) => { if(confirm("Permanently remove?")) remove(ref(db, `orders/${id}`)); };
 </script>
 </body>
 </html>
