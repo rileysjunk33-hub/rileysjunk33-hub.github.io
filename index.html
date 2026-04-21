@@ -89,40 +89,38 @@
 
 <div class="container">
     <div class="header-box">
-        <button onclick="checkAdmin()" id="lock" style="position:absolute; right:15px; top:20px; background:none; border:none; color:rgba(255,255,255,0.6); cursor:pointer;">⚙️</button>
         <h1>Reston Biker Board</h1>
     </div>
 
     <div id="login-overlay" class="panel">
-        <h2 style="text-align:center">Biker Login</h2>
-        <p style="text-align:center; font-size: 0.8em; color: var(--text-muted);">Enter your 4-digit staff code.</p>
-        <input type="password" id="biker-code-input" maxlength="4" placeholder="••••" style="text-align:center; font-size: 2em; letter-spacing: 10px;">
-        <button onclick="verifyBiker()" class="btn btn-post">Sign In</button>
+        <h2 style="text-align:center">Staff Login</h2>
+        <p style="text-align:center; font-size: 0.8em; color: var(--text-muted);">Enter your 4-digit code to access the board.</p>
+        <input type="password" id="login-code" maxlength="4" placeholder="••••" style="text-align:center; font-size: 2em; letter-spacing: 10px;">
+        <button onclick="verifyLogin()" class="btn btn-post">Sign In</button>
     </div>
 
     <div id="main-board" style="display:none;">
         <div class="user-bar">
-            <span>Biker: <span id="display-name" style="color:var(--accent);">--</span></span>
+            <span>Signed in as: <span id="display-name" style="color:var(--accent);">--</span></span>
             <button onclick="location.reload()" style="background:none; border:none; color:var(--danger); font-weight:800; cursor:pointer;">LOGOUT</button>
         </div>
 
-        <div style="display:flex; gap:10px;">
-            <button id="report-btn" onclick="genReport()" class="btn btn-report" style="display:none;">Weekly Report</button>
-        </div>
-
-        <div id="admin-panel" class="panel">
-            <h2>Admin Controls</h2>
-            <button onclick="createEmployee()" class="btn btn-staff">Create Employee Code</button>
-            <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
-            <input type="text" id="r-name" placeholder="Restaurant">
-            <input type="text" id="items" placeholder="Items">
-            <input type="text" id="r-addr" placeholder="Pickup Address">
-            <input type="text" id="d-addr" placeholder="Delivery Address">
-            <div style="display:flex; gap:10px;">
-                <input type="number" id="cust-total" placeholder="Customer Total $">
-                <input type="number" id="biker-pay" placeholder="Biker Earnings $">
+        <div id="admin-panel">
+            <button onclick="genReport()" class="btn btn-report">Generate Weekly Payouts</button>
+            <div class="panel">
+                <h2>Admin Management</h2>
+                <button onclick="createEmployee()" class="btn btn-staff">Create Employee Code</button>
+                <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+                <input type="text" id="r-name" placeholder="Restaurant Name">
+                <input type="text" id="items" placeholder="Order Details">
+                <input type="text" id="r-addr" placeholder="Pickup Address">
+                <input type="text" id="d-addr" placeholder="Delivery Address">
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="cust-total" placeholder="Customer Total $">
+                    <input type="number" id="biker-pay" placeholder="Biker Earnings $">
+                </div>
+                <button onclick="postOrder()" class="btn btn-post">Release Order to Board</button>
             </div>
-            <button onclick="postOrder()" class="btn btn-post">Post New Order</button>
         </div>
 
         <div id="order-list"></div>
@@ -133,6 +131,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, push, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+    // Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyAPdW-0WhvsGk4Lbgjrp08QBnR0QBOJ44k",
         authDomain: "reston-delivery.firebaseapp.com",
@@ -149,49 +148,55 @@
     const staffRef = ref(db, 'employees');
 
     let isAdmin = false;
-    let bikerName = "";
+    let currentUser = "";
+    const ADMIN_PASS = "reston_go"; // Set your 4-digit admin code here
 
-    window.verifyBiker = async () => {
-        const inputCode = document.getElementById('biker-code-input').value;
+    window.verifyLogin = async () => {
+        const code = document.getElementById('login-code').value;
+        
+        // Check for Admin code
+        if(code === ADMIN_PASS) {
+            isAdmin = true;
+            currentUser = "Administrator";
+            document.getElementById('admin-panel').style.display = 'block';
+            enterBoard();
+            return;
+        }
+
+        // Check for Employee codes
         const snapshot = await get(staffRef);
         const staffData = snapshot.val();
-        
         let found = false;
+        
         if(staffData) {
             Object.values(staffData).forEach(staff => {
-                if(staff.code === inputCode) {
-                    bikerName = staff.name;
+                if(staff.code === code) {
+                    currentUser = staff.name;
                     found = true;
                 }
             });
         }
 
         if(found) {
-            document.getElementById('display-name').innerText = bikerName;
-            document.getElementById('login-overlay').style.display = 'none';
-            document.getElementById('main-board').style.display = 'block';
-            renderOrders();
+            enterBoard();
         } else {
-            alert("Invalid Code");
+            Swal.fire('Error', 'Invalid Code', 'error');
         }
     };
 
-    window.checkAdmin = () => {
-        if (prompt("Admin Pass:") === "reston_go") {
-            isAdmin = true;
-            document.getElementById('admin-panel').style.display = 'block';
-            document.getElementById('report-btn').style.display = 'block';
-            document.getElementById('lock').style.display = 'none';
-            renderOrders();
-        }
-    };
+    function enterBoard() {
+        document.getElementById('display-name').innerText = currentUser;
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('main-board').style.display = 'block';
+        renderOrders();
+    }
 
     window.createEmployee = () => {
-        const name = prompt("Enter Employee Name:");
+        const name = prompt("Enter New Employee Name:");
         if(!name) return;
         const code = Math.floor(1000 + Math.random() * 9000).toString();
         push(staffRef, { name: name, code: code });
-        alert(`EMPLOYEE CREATED\nName: ${name}\nAccess Code: ${code}\n\nGive this code to them for login.`);
+        Swal.fire('Success', `Employee: ${name}\nAccess Code: ${code}`, 'success');
     };
 
     window.postOrder = () => {
@@ -212,16 +217,16 @@
         onValue(ordersRef, (snap) => {
             const data = snap.val();
             if(!data) return;
-            let report = "WEEKLY PAYOUT REPORT\n------------------\n";
+            let report = "WEEKLY PAYOUTS\n\n";
             let grandTotal = 0;
             Object.values(data).forEach(o => {
                 if(o.status === 'done') {
-                    report += `${o.biker}: $${o.pay} (${o.res})\n`;
+                    report += `${o.biker}: $${o.pay} - ${o.res}\n`;
                     grandTotal += Number(o.pay);
                 }
             });
-            report += `------------------\nTOTAL: $${grandTotal}`;
-            alert(report);
+            report += `\nTOTAL DISBURSED: $${grandTotal}`;
+            Swal.fire('Payout Report', report, 'info');
         }, { onlyOnce: true });
     };
 
@@ -236,20 +241,20 @@
                 const card = document.createElement('div');
                 card.className = "panel order-card";
                 
-                let btnHtml = `<button onclick="acceptJob('${id}')" class="btn btn-accept">Accept Order</button>`;
+                let btnHtml = `<button onclick="acceptJob('${id}')" class="btn btn-accept">Accept Job</button>`;
                 let statusHtml = `<span class="status status-open">Available</span>`;
                 let bikerTag = "";
 
                 if(o.status === 'busy') {
                     statusHtml = `<span class="status status-busy">On The Way</span>`;
                     bikerTag = `<span class="biker-tag">TAKEN BY ${o.biker}</span>`;
-                    btnHtml = (o.biker === bikerName) ? 
+                    btnHtml = (o.biker === currentUser || isAdmin) ? 
                         `<button onclick="updateStatus('${id}', 'done')" class="btn btn-complete">Mark Delivered</button>` : 
-                        `<button class="btn" style="background:#e5e7eb; color:#9ca3af; cursor:default;">Unavailable</button>`;
+                        `<button class="btn" style="background:#e5e7eb; color:#9ca3af; cursor:default;">Busy</button>`;
                 } else if (o.status === 'done') {
                     statusHtml = `<span class="status status-done">Delivered</span>`;
-                    bikerTag = `<span class="biker-tag" style="color:var(--primary)">COMPLETED BY ${o.biker}</span>`;
-                    btnHtml = `<p style="text-align:center; color:var(--primary); font-weight:800; font-size:0.8em;">SUCCESS</p>`;
+                    bikerTag = `<span class="biker-tag" style="color:var(--primary)">SUCCESS: ${o.biker}</span>`;
+                    btnHtml = `<p style="text-align:center; color:var(--primary); font-weight:800; font-size:0.8em;">FINALIZED</p>`;
                     card.style.opacity = "0.6";
                 }
 
@@ -262,7 +267,7 @@
                     <div class="chip"><div class="chip-label">Drop-off</div><div class="chip-val">🏠 ${o.d_addr}</div></div>
                     <div class="price-grid">
                         <div>
-                            <div class="total-ref">Total: $${o.total}</div>
+                            <div class="total-ref">Order Total: $${o.total}</div>
                             <div class="earnings">$${o.pay}</div>
                         </div>
                         <div style="width:160px;">${btnHtml}</div>
@@ -274,9 +279,9 @@
         });
     }
 
-    window.acceptJob = (id) => update(ref(db, `orders/${id}`), { status: 'busy', biker: bikerName });
+    window.acceptJob = (id) => update(ref(db, `orders/${id}`), { status: 'busy', biker: currentUser });
     window.updateStatus = (id, s) => update(ref(db, `orders/${id}`), { status: s });
-    window.del = (id) => { if(confirm("Remove?")) remove(ref(db, `orders/${id}`)); };
+    window.del = (id) => { if(confirm("Permanently delete this order?")) remove(ref(db, `orders/${id}`)); };
 </script>
 </body>
 </html>
