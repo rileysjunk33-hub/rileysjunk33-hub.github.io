@@ -11,15 +11,16 @@
         .header { background: #2ecc71; color: white; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border-left: 6px solid #2ecc71; position: relative; }
         .card.taken { border-left-color: #95a5a6; opacity: 0.7; background: #e0e0e0; }
-        .btn { padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn-admin { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; }
-        .btn-post { background: #2ecc71; color: white; width: 100%; font-size: 1.1em; margin-top: 10px; }
-        .btn-accept { background: #3498db; color: white; width: 100%; margin-top: 10px; }
+        .btn { padding: 12px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; margin-top: 10px; font-size: 1em; }
+        .btn-admin { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; margin-top: 0; }
+        .btn-post { background: #2ecc71; color: white; width: 100%; }
+        .btn-accept { background: #3498db; color: white; width: 100%; }
+        .btn-maps { background: #e67e22; color: white; width: 100%; text-decoration: none; display: block; text-align: center; box-sizing: border-box; }
         .manager-form { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        .price { color: #27ae60; font-weight: bold; font-size: 1.2em; }
-        .pay { color: #2980b9; font-weight: bold; font-size: 1.3em; background: #e1f5fe; padding: 5px 10px; border-radius: 5px; display: inline-block; margin-top: 5px; }
-        h1 { margin: 0; font-size: 1.2em; }
+        .price { color: #27ae60; font-weight: bold; }
+        .pay { color: #2980b9; font-weight: bold; font-size: 1.2em; background: #e1f5fe; padding: 5px 10px; border-radius: 5px; display: inline-block; }
+        .address-text { color: #d35400; font-weight: bold; display: block; margin: 10px 0; }
         .status-badge { position: absolute; top: 10px; right: 10px; font-size: 0.8em; padding: 4px 8px; border-radius: 4px; background: #2ecc71; color: white; }
         .taken-badge { background: #7f8c8d; }
     </style>
@@ -34,15 +35,16 @@
 
     <div id="manager-panel" class="manager-form">
         <h3 style="margin-top:0;">Post New Order</h3>
-        <input type="text" id="rest-name" placeholder="Restaurant (e.g. Glory Days)">
-        <input type="text" id="order-items" placeholder="Items (e.g. 1 Burger, 1 Mac)">
+        <input type="text" id="rest-name" placeholder="Restaurant Name">
+        <input type="text" id="order-items" placeholder="Items (e.g. Burger, Fries)">
+        <input type="text" id="order-address" placeholder="Delivery Address (Reston 20194)">
         <input type="number" id="order-total" placeholder="Customer Total $">
         <input type="number" id="driver-pay" placeholder="Biker Earnings $">
         <button onclick="postOrder()" class="btn btn-post">Post to Board</button>
     </div>
 
     <div id="order-list">
-        <p style="text-align:center;">Connecting to Reston network...</p>
+        <p style="text-align:center;">Looking for orders in 20194...</p>
     </div>
 </div>
 
@@ -50,11 +52,11 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // Data from your screenshots
+    // --- KEYS FROM YOUR SCREENSHOT ---
     const firebaseConfig = {
         apiKey: "AIzaSyAPdW-0WhvsGk4Lbgjrp08QBnR0QBOJ44k",
         authDomain: "reston-delivery.firebaseapp.com",
-        databaseURL: "https://reston-delivery-default-rtdb.firebaseio.com",
+        databaseURL: "https://reston-delivery-default-rtdb.firebaseio.com", 
         projectId: "reston-delivery",
         storageBucket: "reston-delivery.firebasestorage.app",
         messagingSenderId: "274165504629",
@@ -65,87 +67,85 @@
     const db = getDatabase(app);
     const ordersRef = ref(db, 'orders');
 
-    // 1. Password Protection
     window.checkPassword = function() {
         const pw = prompt("Enter Manager Password:");
         if (pw === "reston_go") { 
             document.getElementById('manager-panel').style.display = 'block';
             document.getElementById('login-btn').style.display = 'none';
-        } else {
-            alert("Unauthorized");
         }
     }
 
-    // 2. Post Data
     window.postOrder = function() {
         const name = document.getElementById('rest-name').value;
         const items = document.getElementById('order-items').value;
+        const addr = document.getElementById('order-address').value;
         const total = document.getElementById('order-total').value;
         const pay = document.getElementById('driver-pay').value;
 
-        if(!name || !pay) return alert("Fill out the name and pay!");
+        if(!name || !pay || !addr) return alert("Missing Info!");
 
         push(ordersRef, {
             restaurant: name,
             items: items,
+            address: addr,
             total: total,
             earnings: pay,
             status: "available",
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
 
-        // Clear form
         document.getElementById('rest-name').value = '';
         document.getElementById('order-items').value = '';
+        document.getElementById('order-address').value = '';
         document.getElementById('order-total').value = '';
         document.getElementById('driver-pay').value = '';
     }
 
-    // 3. Sync Board
     onValue(ordersRef, (snapshot) => {
         const data = snapshot.val();
         const list = document.getElementById('order-list');
         list.innerHTML = '';
 
         if(!data) {
-            list.innerHTML = '<p style="text-align:center; color:#7f8c8d;">No active orders in 20194.</p>';
+            list.innerHTML = '<p style="text-align:center; color:#7f8c8d;">Board is clear. Waiting for orders...</p>';
             return;
         }
 
-        const entries = Object.entries(data).reverse(); // Newest first
-
-        entries.forEach(([id, order]) => {
+        Object.entries(data).reverse().forEach(([id, order]) => {
             const isTaken = order.status === "taken";
             const card = document.createElement('div');
             card.className = `card ${isTaken ? 'taken' : ''}`;
             
             card.innerHTML = `
                 <span class="status-badge ${isTaken ? 'taken-badge' : ''}">${order.status.toUpperCase()}</span>
-                <h2 style="margin:0 0 5px 0;">${order.restaurant}</h2>
-                <p style="margin:5px 0; color:#666;">${order.items}</p>
+                <h2 style="margin:0;">${order.restaurant}</h2>
+                <p style="margin:5px 0;">${order.items}</p>
+                <span class="address-text">📍 ${order.address}</span>
                 <div style="margin-top:10px;">
-                    <span class="price">Total: $${order.total}</span><br>
-                    <span class="pay">You Earn: $${order.earnings}</span>
+                    <span class="price">Customer Pays: $${order.total}</span><br>
+                    <span class="pay">BIKER EARNS: $${order.earnings}</span>
                 </div>
-                <p style="font-size:0.7em; color:#999; margin-top:10px;">Posted at ${order.time}</p>
+                
                 ${isTaken 
-                    ? `<button onclick="deleteOrder('${id}')" class="btn" style="background:#e74c3c; color:white; width:100%; margin-top:10px;">Clear Order</button>` 
-                    : `<button onclick="acceptOrder('${id}')" class="btn btn-accept">Accept Order</button>`
+                    ? `<button onclick="deleteOrder('${id}')" class="btn" style="background:#e74c3c; color:white; width:100%;">Complete & Remove</button>` 
+                    : `
+                        <button onclick="acceptOrder('${id}')" class="btn btn-accept">Accept Delivery</button>
+                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.address)}" target="_blank" class="btn btn-maps">View Map</a>
+                      `
                 }
             `;
             list.appendChild(card);
         });
     });
 
-    // 4. Biker Actions
     window.acceptOrder = function(id) {
-        if(confirm("Are you sure you want to take this order?")) {
+        if(confirm("Claim this delivery?")) {
             update(ref(db, `orders/${id}`), { status: "taken" });
         }
     }
 
     window.deleteOrder = function(id) {
-        if(confirm("Clear this from the board?")) {
+        if(confirm("Finished with this delivery?")) {
             remove(ref(db, `orders/${id}`));
         }
     }
