@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reston Eco-Delivery | Board</title>
+    <title>Reston Eco-Delivery | Secure Board</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
@@ -23,101 +23,66 @@
             background-color: var(--bg-light); 
             margin: 0; padding: 20px; 
             color: var(--text-dark);
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
+            display: flex; justify-content: center; min-height: 100vh;
         }
 
         .container { width: 100%; max-width: 500px; }
 
-        /* Header Style */
         .header-box {
-            background: var(--primary);
-            color: white;
-            padding: 20px;
-            border-radius: 16px;
-            text-align: center;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
-            position: relative;
+            background: var(--primary); color: white; padding: 20px;
+            border-radius: 16px; text-align: center; margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2); position: relative;
         }
 
         .header-box h1 { margin: 0; font-size: 1.5em; font-weight: 800; }
 
-        /* Founder Mission */
-        .mission-box {
-            background: white;
-            padding: 15px 20px;
-            border-radius: 16px;
-            margin-bottom: 25px;
-            font-size: 0.85em;
-            color: var(--text-muted);
-            border: 1px solid rgba(0,0,0,0.05);
-            line-height: 1.5;
-        }
-
-        /* Forms & Cards */
         .panel { 
-            background: var(--card-white); 
-            padding: 30px; 
-            border-radius: 20px; 
-            margin-bottom: 20px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            background: var(--card-white); padding: 30px; border-radius: 20px; 
+            margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);
             border: 1px solid rgba(0,0,0,0.03);
         }
 
-        h2 { margin-top: 0; font-size: 1.2em; font-weight: 800; color: var(--text-dark); }
+        .user-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #fff; padding: 10px 20px; border-radius: 12px;
+            margin-bottom: 20px; font-size: 0.8em; font-weight: 700;
+        }
 
         input { 
             width: 100%; padding: 14px; margin: 8px 0; 
             background: #f9fafb; border: 1px solid #e5e7eb; 
             border-radius: 12px; font-family: inherit; box-sizing: border-box;
-            transition: border-color 0.2s;
         }
-        input:focus { outline: none; border-color: var(--primary); }
 
         .btn { 
             padding: 16px; border: none; border-radius: 14px; 
             cursor: pointer; font-weight: 800; width: 100%; 
-            font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;
-            transition: transform 0.1s, opacity 0.2s;
+            font-size: 14px; text-transform: uppercase; transition: 0.2s;
         }
-        .btn:active { transform: scale(0.98); }
         
         .btn-post { background: var(--primary); color: white; margin-top: 10px; }
+        .btn-staff { background: #6366f1; color: white; margin-top: 10px; }
+        .btn-report { background: #1f2937; color: white; margin-bottom: 20px; }
         .btn-accept { background: var(--accent); color: white; }
         .btn-complete { background: #fbbf24; color: #000; }
-        .btn-remove { 
-            background: none; border: 1px solid var(--danger); 
-            color: var(--danger); padding: 8px; margin-top: 15px; 
-            font-size: 10px; display: none; 
-        }
+        .btn-remove { background: none; border: 1px solid var(--danger); color: var(--danger); font-size: 10px; margin-top: 15px; }
 
-        /* Order Styling */
-        .order-card { position: relative; }
         .status {
             position: absolute; top: 25px; right: 25px;
-            font-size: 0.65em; font-weight: 800; text-transform: uppercase;
-            padding: 4px 10px; border-radius: 6px;
+            font-size: 0.65em; font-weight: 800; padding: 4px 10px; border-radius: 6px;
         }
         .status-open { background: #d1fae5; color: #065f46; }
-        .status-busy { background: #dbeafe; color: #1e40af; animation: pulse 2s infinite; }
-        .status-done { background: #f3f4f6; color: #374151; }
+        .status-busy { background: #dbeafe; color: #1e40af; }
 
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-        .chip {
-            background: #f9fafb; padding: 12px; border-radius: 12px;
-            margin: 10px 0; border: 1px solid #f3f4f6;
-        }
+        .biker-tag { font-size: 11px; color: var(--accent); font-weight: 800; margin-top: 5px; display: block; }
+        .chip { background: #f9fafb; padding: 12px; border-radius: 12px; margin: 10px 0; border: 1px solid #f3f4f6; }
         .chip-label { font-size: 9px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; }
-        .chip-val { font-size: 13px; font-weight: 600; color: var(--text-dark); }
+        .chip-val { font-size: 13px; font-weight: 600; }
 
         .price-grid { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
         .earnings { font-size: 1.4em; font-weight: 800; color: var(--primary); }
-        .total-ref { font-size: 10px; color: var(--text-muted); font-weight: 600; }
 
-        #admin-panel { display: none; border-top: 4px solid var(--primary); }
+        #admin-panel { display: none; }
     </style>
 </head>
 <body>
@@ -128,31 +93,45 @@
         <h1>Reston Biker Board</h1>
     </div>
 
-    <div class="mission-box">
-        <strong>Riley (Founder):</strong> I built this to help Reston restaurants avoid massive delivery fees. E-bike powered and local-first.
+    <div id="login-overlay" class="panel">
+        <h2 style="text-align:center">Biker Login</h2>
+        <p style="text-align:center; font-size: 0.8em; color: var(--text-muted);">Enter your 4-digit staff code.</p>
+        <input type="password" id="biker-code-input" maxlength="4" placeholder="••••" style="text-align:center; font-size: 2em; letter-spacing: 10px;">
+        <button onclick="verifyBiker()" class="btn btn-post">Sign In</button>
     </div>
 
-    <div id="admin-panel" class="panel">
-        <h2>Post New Order</h2>
-        <input type="text" id="r-name" placeholder="Restaurant (e.g. Glory Days)">
-        <input type="text" id="items" placeholder="Items (e.g. 1 Burger, 1 Mac)">
-        <input type="text" id="r-addr" placeholder="Pickup Address">
-        <input type="text" id="d-addr" placeholder="Delivery Address">
-        <div style="display:flex; gap:10px;">
-            <input type="number" id="cust-total" placeholder="Customer Total $">
-            <input type="number" id="biker-pay" placeholder="Biker Earnings $">
+    <div id="main-board" style="display:none;">
+        <div class="user-bar">
+            <span>Biker: <span id="display-name" style="color:var(--accent);">--</span></span>
+            <button onclick="location.reload()" style="background:none; border:none; color:var(--danger); font-weight:800; cursor:pointer;">LOGOUT</button>
         </div>
-        <button onclick="postOrder()" class="btn btn-post">Post to Board</button>
-    </div>
 
-    <div id="order-list">
-        <p style="text-align:center; color:var(--text-muted); margin-top:40px;">Connecting to Reston network...</p>
+        <div style="display:flex; gap:10px;">
+            <button id="report-btn" onclick="genReport()" class="btn btn-report" style="display:none;">Weekly Report</button>
+        </div>
+
+        <div id="admin-panel" class="panel">
+            <h2>Admin Controls</h2>
+            <button onclick="createEmployee()" class="btn btn-staff">Create Employee Code</button>
+            <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+            <input type="text" id="r-name" placeholder="Restaurant">
+            <input type="text" id="items" placeholder="Items">
+            <input type="text" id="r-addr" placeholder="Pickup Address">
+            <input type="text" id="d-addr" placeholder="Delivery Address">
+            <div style="display:flex; gap:10px;">
+                <input type="number" id="cust-total" placeholder="Customer Total $">
+                <input type="number" id="biker-pay" placeholder="Biker Earnings $">
+            </div>
+            <button onclick="postOrder()" class="btn btn-post">Post New Order</button>
+        </div>
+
+        <div id="order-list"></div>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, push, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAPdW-0WhvsGk4Lbgjrp08QBnR0QBOJ44k",
@@ -167,16 +146,52 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const ordersRef = ref(db, 'orders');
+    const staffRef = ref(db, 'employees');
 
     let isAdmin = false;
+    let bikerName = "";
+
+    window.verifyBiker = async () => {
+        const inputCode = document.getElementById('biker-code-input').value;
+        const snapshot = await get(staffRef);
+        const staffData = snapshot.val();
+        
+        let found = false;
+        if(staffData) {
+            Object.values(staffData).forEach(staff => {
+                if(staff.code === inputCode) {
+                    bikerName = staff.name;
+                    found = true;
+                }
+            });
+        }
+
+        if(found) {
+            document.getElementById('display-name').innerText = bikerName;
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('main-board').style.display = 'block';
+            renderOrders();
+        } else {
+            alert("Invalid Code");
+        }
+    };
 
     window.checkAdmin = () => {
-        if (prompt("Passkey:") === "reston_go") {
+        if (prompt("Admin Pass:") === "reston_go") {
             isAdmin = true;
             document.getElementById('admin-panel').style.display = 'block';
+            document.getElementById('report-btn').style.display = 'block';
             document.getElementById('lock').style.display = 'none';
             renderOrders();
         }
+    };
+
+    window.createEmployee = () => {
+        const name = prompt("Enter Employee Name:");
+        if(!name) return;
+        const code = Math.floor(1000 + Math.random() * 9000).toString();
+        push(staffRef, { name: name, code: code });
+        alert(`EMPLOYEE CREATED\nName: ${name}\nAccess Code: ${code}\n\nGive this code to them for login.`);
     };
 
     window.postOrder = () => {
@@ -187,9 +202,27 @@
             d_addr: document.getElementById('d-addr').value,
             total: document.getElementById('cust-total').value,
             pay: document.getElementById('biker-pay').value,
-            status: "open"
+            status: "open",
+            biker: ""
         });
         document.querySelectorAll('input').forEach(i => i.value = '');
+    };
+
+    window.genReport = () => {
+        onValue(ordersRef, (snap) => {
+            const data = snap.val();
+            if(!data) return;
+            let report = "WEEKLY PAYOUT REPORT\n------------------\n";
+            let grandTotal = 0;
+            Object.values(data).forEach(o => {
+                if(o.status === 'done') {
+                    report += `${o.biker}: $${o.pay} (${o.res})\n`;
+                    grandTotal += Number(o.pay);
+                }
+            });
+            report += `------------------\nTOTAL: $${grandTotal}`;
+            alert(report);
+        }, { onlyOnce: true });
     };
 
     function renderOrders() {
@@ -197,35 +230,39 @@
             const container = document.getElementById('order-list');
             container.innerHTML = '';
             const data = snap.val();
-            if(!data) return container.innerHTML = '<p style="text-align:center; color:var(--text-muted); margin-top:40px;">No active orders.</p>';
+            if(!data) return;
 
             Object.entries(data).reverse().forEach(([id, o]) => {
                 const card = document.createElement('div');
                 card.className = "panel order-card";
                 
-                let btnHtml = `<button onclick="act('${id}', 'busy')" class="btn btn-accept">Accept Order</button>`;
+                let btnHtml = `<button onclick="acceptJob('${id}')" class="btn btn-accept">Accept Order</button>`;
                 let statusHtml = `<span class="status status-open">Available</span>`;
+                let bikerTag = "";
 
                 if(o.status === 'busy') {
-                    btnHtml = `<button onclick="act('${id}', 'done')" class="btn btn-complete">Mark Delivered</button>`;
                     statusHtml = `<span class="status status-busy">On The Way</span>`;
+                    bikerTag = `<span class="biker-tag">TAKEN BY ${o.biker}</span>`;
+                    btnHtml = (o.biker === bikerName) ? 
+                        `<button onclick="updateStatus('${id}', 'done')" class="btn btn-complete">Mark Delivered</button>` : 
+                        `<button class="btn" style="background:#e5e7eb; color:#9ca3af; cursor:default;">Unavailable</button>`;
                 } else if (o.status === 'done') {
-                    btnHtml = `<p style="text-align:center; color:var(--primary); font-weight:800; font-size:0.8em;">SUCCESSFULLY DELIVERED</p>`;
                     statusHtml = `<span class="status status-done">Delivered</span>`;
+                    bikerTag = `<span class="biker-tag" style="color:var(--primary)">COMPLETED BY ${o.biker}</span>`;
+                    btnHtml = `<p style="text-align:center; color:var(--primary); font-weight:800; font-size:0.8em;">SUCCESS</p>`;
                     card.style.opacity = "0.6";
                 }
 
                 card.innerHTML = `
                     ${statusHtml}
-                    <h2 style="margin-bottom:5px;">${o.res}</h2>
-                    <p style="color:var(--text-muted); font-size:0.9em; margin-bottom:15px;">${o.items}</p>
-                    
+                    <h2 style="margin:0;">${o.res}</h2>
+                    ${bikerTag}
+                    <p style="color:var(--text-muted); font-size:0.9em; margin:10px 0;">${o.items}</p>
                     <div class="chip"><div class="chip-label">Pickup</div><div class="chip-val">📍 ${o.p_addr}</div></div>
                     <div class="chip"><div class="chip-label">Drop-off</div><div class="chip-val">🏠 ${o.d_addr}</div></div>
-
                     <div class="price-grid">
                         <div>
-                            <div class="total-ref">Order Total: $${o.total}</div>
+                            <div class="total-ref">Total: $${o.total}</div>
                             <div class="earnings">$${o.pay}</div>
                         </div>
                         <div style="width:160px;">${btnHtml}</div>
@@ -237,10 +274,9 @@
         });
     }
 
-    window.act = (id, s) => update(ref(db, `orders/${id}`), { status: s });
-    window.del = (id) => { if(confirm("Remove this order?")) remove(ref(db, `orders/${id}`)); };
-
-    renderOrders();
+    window.acceptJob = (id) => update(ref(db, `orders/${id}`), { status: 'busy', biker: bikerName });
+    window.updateStatus = (id, s) => update(ref(db, `orders/${id}`), { status: s });
+    window.del = (id) => { if(confirm("Remove?")) remove(ref(db, `orders/${id}`)); };
 </script>
 </body>
 </html>
