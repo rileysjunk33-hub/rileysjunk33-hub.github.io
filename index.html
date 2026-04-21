@@ -95,7 +95,7 @@
     <div id="login-overlay" class="panel">
         <h2 style="text-align:center">Staff Login</h2>
         <p style="text-align:center; font-size: 0.8em; color: var(--text-muted);">Enter your 4-digit code to access the board.</p>
-        <input type="password" id="login-code" maxlength="8" placeholder="••••" style="text-align:center; font-size: 2em; letter-spacing: 10px;">
+        <input type="password" id="login-code" maxlength="4" placeholder="••••" style="text-align:center; font-size: 2em; letter-spacing: 10px;">
         <button onclick="verifyLogin()" class="btn btn-post">Sign In</button>
     </div>
 
@@ -106,7 +106,7 @@
         </div>
 
         <div id="admin-panel">
-            <button onclick="genReport()" class="btn btn-report">Weekly Payout Report</button>
+            <button id="report-btn" onclick="genReport()" class="btn btn-report">Weekly Payout Report</button>
             <div class="panel">
                 <h2>Admin Controls</h2>
                 <button onclick="createEmployee()" class="btn btn-staff">Create Employee Code</button>
@@ -131,7 +131,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, push, onValue, update, remove, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyAPdW-0WhvsGk4Lbgjrp08QBnR0QBOJ44k",
         authDomain: "reston-delivery.firebaseapp.com",
@@ -149,21 +148,19 @@
 
     let isAdmin = false;
     let currentUser = "";
-    const ADMIN_PASS = "reston_go"; // Your specific admin code
+    const ADMIN_PASS = "6793"; // Your specific admin code
 
     window.verifyLogin = async () => {
         const code = document.getElementById('login-code').value;
         
-        // Direct Admin Entry
         if(code === ADMIN_PASS) {
             isAdmin = true;
-            currentUser = "Riley (Admin)";
+            currentUser = "Riley";
             document.getElementById('admin-panel').style.display = 'block';
             enterBoard();
             return;
         }
 
-        // Employee Database Check
         const snapshot = await get(staffRef);
         const staffData = snapshot.val();
         let found = false;
@@ -196,7 +193,7 @@
         if(!name) return;
         const code = Math.floor(1000 + Math.random() * 9000).toString();
         push(staffRef, { name: name, code: code });
-        Swal.fire('Code Generated', `Give this to ${name}: ${code}`, 'success');
+        Swal.fire('Employee Created', `Name: ${name}\nAccess Code: ${code}`, 'success');
     };
 
     window.postOrder = () => {
@@ -217,16 +214,16 @@
         onValue(ordersRef, (snap) => {
             const data = snap.val();
             if(!data) return;
-            let report = "WEEKLY PAYOUTS\n\n";
+            let report = "WEEKLY PAYOUT REPORT\n------------------\n";
             let grandTotal = 0;
             Object.values(data).forEach(o => {
                 if(o.status === 'done') {
-                    report += `${o.biker}: $${o.pay} - ${o.res}\n`;
+                    report += `${o.biker}: $${o.pay} (${o.res})\n`;
                     grandTotal += Number(o.pay);
                 }
             });
-            report += `\nTOTAL: $${grandTotal}`;
-            Swal.fire('Payout Summary', report, 'info');
+            report += `------------------\nGRAND TOTAL: $${grandTotal}`;
+            Swal.fire('Report Generated', report, 'info');
         }, { onlyOnce: true });
     };
 
@@ -250,11 +247,11 @@
                     bikerTag = `<span class="biker-tag">TAKEN BY ${o.biker}</span>`;
                     btnHtml = (o.biker === currentUser || isAdmin) ? 
                         `<button onclick="updateStatus('${id}', 'done')" class="btn btn-complete">Mark Delivered</button>` : 
-                        `<button class="btn" style="background:#e5e7eb; color:#9ca3af; cursor:default;">Occupied</button>`;
+                        `<button class="btn" style="background:#e5e7eb; color:#9ca3af; cursor:default;">Biker Busy</button>`;
                 } else if (o.status === 'done') {
                     statusHtml = `<span class="status status-done">Delivered</span>`;
-                    bikerTag = `<span class="biker-tag" style="color:var(--primary)">SUCCESS: ${o.biker}</span>`;
-                    btnHtml = `<p style="text-align:center; color:var(--primary); font-weight:800; font-size:0.8em;">ORDER REMOVED</p>`;
+                    bikerTag = `<span class="biker-tag" style="color:var(--primary)">COMPLETED BY ${o.biker}</span>`;
+                    btnHtml = `<p style="text-align:center; color:var(--primary); font-weight:800; font-size:0.8em;">SUCCESS</p>`;
                     card.style.opacity = "0.6";
                 }
 
@@ -267,7 +264,7 @@
                     <div class="chip"><div class="chip-label">Drop-off</div><div class="chip-val">🏠 ${o.d_addr}</div></div>
                     <div class="price-grid">
                         <div>
-                            <div class="total-ref">Order Total: $${o.total}</div>
+                            <div class="total-ref">Total: $${o.total}</div>
                             <div class="earnings">$${o.pay}</div>
                         </div>
                         <div style="width:160px;">${btnHtml}</div>
